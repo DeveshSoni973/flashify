@@ -17,7 +17,7 @@ class FlashCardDetailSerializer(serializers.ModelSerializer):
 class FlashCardCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flashcard
-        fields = ['question', 'answer']  # Removed user field since we get it from request
+        fields = ['id', 'question', 'answer']  # Removed user field since we get it from request
 
     def create(self, validated_data):
         user = self.context['request'].user  # Automatically get the user from the request context
