@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser
+from django.contrib.auth import authenticate
 
 #this is for registering new users
 class RegisterSerializer(serializers.ModelSerializer):
@@ -24,7 +25,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'profile_picture']
 
 
-
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        username = data.get("username")
+        password = data.get("password")
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if user and user.is_active:
+                data['user'] = user  # attach the user to validated_data
+                return data
+            raise serializers.ValidationError("Invalid username or password")
+        raise serializers.ValidationError("Must include username and password")

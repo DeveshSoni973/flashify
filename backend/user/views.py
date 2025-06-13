@@ -19,30 +19,19 @@ class RegisterView(APIView):
 # Login View: Handles user login and JWT token generation
 class LoginView(APIView):
     def post(self, request):
-        # Validate login data with LoginSerializer
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            username = serializer.validated_data['username']
-            password = serializer.validated_data['password']
-            
-            # Authenticate user
-            user = authenticate(username=username, password=password) #we decoted the AUTH_MODEL in settings.py
-            if user is not None:
-                # Generate JWT token
-                token = RefreshToken.for_user(user)
-                
-                # Serialize user data (without password)
-                user_data = UserSerializer(user).data
-                
-                # Return token and user data
-                return Response({
-                    'access': str(token.access_token),
-                    'refresh': str(token),
-                    'user': user_data
-                }, status=status.HTTP_200_OK)
-            
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
-        
+            user = serializer.validated_data['user']  # already authenticated
+
+            token = RefreshToken.for_user(user)
+            user_data = UserSerializer(user).data
+
+            return Response({
+                'access': str(token.access_token),
+                'refresh': str(token),
+                'user': user_data
+            }, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Logout View: Handles user logout by blacklisting the refresh token
