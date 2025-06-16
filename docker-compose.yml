@@ -10,7 +10,7 @@ services:
     depends_on:
       - frontend
     environment:
-      DJANGO_SETTINGS_MODULE: flashify.settings  # Optional
+      DJANGO_SETTINGS_MODULE: backend.settings  # Optional
 
   frontend:
     build:
